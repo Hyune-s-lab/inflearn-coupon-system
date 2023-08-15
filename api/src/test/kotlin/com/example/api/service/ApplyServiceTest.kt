@@ -1,7 +1,10 @@
 package com.example.api.service
 
+import com.example.api.repository.CouponCountRepository
 import com.example.api.repository.CouponRepository
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.core.test.TestCase
+import io.kotest.core.test.TestResult
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -14,7 +17,8 @@ import kotlin.system.measureTimeMillis
 @SpringBootTest
 class ApplyServiceTest(
     private val applyService: ApplyService,
-    private val couponRepository: CouponRepository
+    private val couponRepository: CouponRepository,
+    private val couponCountRepository: CouponCountRepository
 ) : FunSpec({
     test("한번만 응모") {
         applyService.applyCoupon(1)
@@ -34,7 +38,13 @@ class ApplyServiceTest(
 
         couponRepository.count() shouldBe 100
     }
-})
+}) {
+    override suspend fun afterEach(testCase: TestCase, result: TestResult) {
+        super.afterEach(testCase, result)
+
+        couponCountRepository.delete("couponCount")
+    }
+}
 
 suspend fun massiveRun(action: suspend () -> Unit) {
     val n = 1000 // 시작할 코루틴의 갯수
