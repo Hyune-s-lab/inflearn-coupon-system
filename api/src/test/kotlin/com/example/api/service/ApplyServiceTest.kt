@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.springframework.boot.test.context.SpringBootTest
+import java.lang.Thread.sleep
 import kotlin.system.measureTimeMillis
 
 @SpringBootTest
@@ -26,7 +27,7 @@ class ApplyServiceTest(
     }
 
     test("여러명 응모") {
-        var i = 0L
+        var i = 1L
 
         runBlocking {
             withContext(Dispatchers.Default) {
@@ -36,6 +37,8 @@ class ApplyServiceTest(
             }
         }
 
+        sleep(2000)
+
         couponRepository.count() shouldBe 100
     }
 }) {
@@ -43,6 +46,7 @@ class ApplyServiceTest(
         super.afterEach(testCase, result)
 
         couponCountRepository.delete("couponCount")
+        couponRepository.deleteAllInBatch()
     }
 }
 
