@@ -41,6 +41,20 @@ class ApplyServiceTest(
 
         couponRepository.count() shouldBe 100
     }
+
+    test("한명당 한개의 쿠폰만 발급") {
+        runBlocking {
+            withContext(Dispatchers.Default) {
+                massiveRun {
+                    applyService.applyCoupon(1L)
+                }
+            }
+        }
+
+        sleep(2000)
+
+        couponRepository.count() shouldBe 1
+    }
 }) {
     override suspend fun afterEach(testCase: TestCase, result: TestResult) {
         super.afterEach(testCase, result)
